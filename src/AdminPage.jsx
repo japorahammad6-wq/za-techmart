@@ -223,6 +223,7 @@ function AdminPage() {
     old_price: '',
     stock: '',
     image: '',
+    images: [],
     description: '',
   })
 
@@ -338,6 +339,7 @@ function AdminPage() {
       old_price: '',
       stock: '',
       image: '',
+      images: [],
       description: '',
     })
 
@@ -362,7 +364,20 @@ function AdminPage() {
       old_price: product.old_price ?? '',
       stock: product.stock ?? 0,
       image: product.image || '',
-      description: product.description || '',
+images: (() => {
+  const existingImages = Array.isArray(product.images)
+    ? product.images.filter(Boolean)
+    : []
+
+  const mainImage = product.image || ''
+
+  if (mainImage && !existingImages.includes(mainImage)) {
+    return [mainImage, ...existingImages]
+  }
+
+  return existingImages
+})(),
+description: product.description || '',
     })
 
     setProductModal(true)
@@ -414,13 +429,16 @@ function AdminPage() {
   // --------------------------------
 
   const handleImageUpload = async (event) => {
-    const file = event.target.files?.[0]
+  const files = Array.from(event.target.files || [])
 
-    if (!file) return
+  if (files.length === 0) return
 
-    try {
-      setUploading(true)
+  try {
+    setUploading(true)
 
+    const uploadedUrls = []
+
+    for (const file of files) {
       const fileExt = file.name.split('.').pop()
 
       const fileName = `products/${Date.now()}-${Math.random()
@@ -433,26 +451,45 @@ function AdminPage() {
 
       if (uploadError) {
         console.error(uploadError)
-        alert('Image upload failed')
-        return
+        continue
       }
 
       const { data } = supabase.storage
         .from('product-images')
         .getPublicUrl(fileName)
 
-      setForm((prev) => ({
-        ...prev,
-        image: data.publicUrl,
-      }))
-    } catch (error) {
-      console.error(error)
-      alert('Image upload failed')
-    } finally {
-      setUploading(false)
+      if (data?.publicUrl) {
+        uploadedUrls.push(data.publicUrl)
+      }
     }
-  }
 
+    if (uploadedUrls.length > 0) {
+      setForm((prev) => {
+        const existingImages = Array.isArray(prev.images)
+          ? prev.images
+          : []
+
+        const baseImages =
+          prev.image && !existingImages.includes(prev.image)
+            ? [prev.image, ...existingImages]
+            : existingImages
+
+        return {
+          ...prev,
+          image: prev.image || uploadedUrls[0],
+          images: [...baseImages, ...uploadedUrls],
+        }
+      })
+    }
+
+    event.target.value = ''
+  } catch (error) {
+    console.error(error)
+    alert('Image upload failed')
+  } finally {
+    setUploading(false)
+  }
+}
   // --------------------------------
   // SAVE PRODUCT
   // --------------------------------
@@ -494,6 +531,9 @@ function AdminPage() {
             ? 0
             : Number(form.stock),
         image: form.image || null,
+        images: Array.isArray(form.images)
+  ? form.images
+  : [],
         description: form.description.trim() || null,
       }
 
@@ -1994,11 +2034,12 @@ function AdminPage() {
                 </label>
 
                 <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="w-full px-4 py-3 border rounded-xl"
-                />
+  type="file"
+  accept="image/*"
+  multiple
+  onChange={handleImageUpload}
+  className="w-full px-4 py-3 border rounded-xl"
+/>
 
                 {uploading && (
                   <p className="text-sm text-blue-600 mt-2">
@@ -2006,18 +2047,76 @@ function AdminPage() {
                   </p>
                 )}
 
-                {form.image && (
-                  <div className="mt-4">
+                {form.images.length > 0 && (
+  <div className="mt-4">
 
-                    <img
-                      src={form.image}
-                      alt="Preview"
-                      className="w-32 h-32 object-cover rounded-xl border"
-                    />
+    <p className="text-sm font-semibold mb-3">
+      Product Images ({form.images.length})
+    </p>
 
-                  </div>
-                )}
+    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
 
+      {form.images.map((img, index) => (
+
+        <div
+          key={img}
+          className="relative group border rounded-xl overflow-hidden bg-white"
+        >
+
+          <img
+  src={img}
+  alt={`Preview ${index + 1}`}
+  onClick={() => {
+    setForm((prev) => ({
+      ...prev,
+      image: img,
+      images: [
+        img,
+        ...prev.images.filter((image) => image !== img),
+      ],
+    }))
+  }}
+  className="w-full h-28 object-contain p-2 cursor-pointer"
+/>
+
+          {index === 0 && (
+  <span className="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow">
+    ✓ Main Image
+  </span>
+)}
+
+          <button
+            type="button"
+            onClick={() => {
+              setForm((prev) => {
+
+                const nextImages = prev.images.filter(
+                  (_, imageIndex) => imageIndex !== index
+                )
+
+                return {
+                  ...prev,
+                  images: nextImages,
+                  image:
+                    nextImages.length > 0
+                      ? nextImages[0]
+                      : '',
+                }
+              })
+            }}
+            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500 text-white font-bold opacity-0 group-hover:opacity-100 transition"
+          >
+            ×
+          </button>
+
+        </div>
+
+      ))}
+
+    </div>
+
+  </div>
+)}
               </div>
 
 

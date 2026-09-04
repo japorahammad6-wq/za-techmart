@@ -208,12 +208,40 @@ const [stockOnly, setStockOnly] = useState(false)
 
   const [cart, setCart] = useState([])
   const [wishlist, setWishlist] = useState([])
+const [selectedProduct, setSelectedProduct] = useState(null)
+const [selectedImage, setSelectedImage] = useState(null)
+const [zoomImage, setZoomImage] = useState(null)
+const getProductImages = (product) => {
+  const images = Array.isArray(product.images)
+    ? product.images.filter(Boolean)
+    : []
 
+  const mainImage =
+    product.image_url ||
+    product.image ||
+    product.imageUrl ||
+    product.photo_url
+
+  if (mainImage && !images.includes(mainImage)) {
+    return [mainImage, ...images]
+  }
+
+  return images
+}
+useEffect(() => {
+  if (!selectedProduct) {
+    setSelectedImage(null)
+    return
+  }
+
+  const images = getProductImages(selectedProduct)
+
+  setSelectedImage(images[0] || null)
+}, [selectedProduct])
   const [cartOpen, setCartOpen] = useState(false)
   const [checkoutOpen, setCheckoutOpen] = useState(false)
   const [trackingOpen, setTrackingOpen] = useState(false)
   const [adminOpen, setAdminOpen] = useState(false)
-
   const [customer, setCustomer] = useState({
     name: '',
     phone: '',
@@ -287,36 +315,57 @@ const [stockOnly, setStockOnly] = useState(false)
   }
 
   const increaseQuantity = (productId) => {
-    setCart((current) =>
-      current.map((item) => {
-        if (item.id !== productId) return item
+  setCart((prev) => {
+    const existing = prev.find((item) => item.id === productId)
 
-        if (item.quantity >= Number(item.stock || 0)) {
-          return item
-        }
+    if (!existing) {
+      const product = products.find((item) => item.id === productId)
 
-        return {
-          ...item,
-          quantity: item.quantity + 1,
-        }
-      })
+      if (!product) return prev
+
+      return [
+        ...prev,
+        {
+          ...product,
+          quantity: 2,
+        },
+      ]
+    }
+
+    return prev.map((item) =>
+      item.id === productId
+        ? {
+            ...item,
+            quantity: Math.min(
+              item.quantity + 1,
+              Number(item.stock) || 999
+            ),
+          }
+        : item
     )
-  }
+  })
+}
 
   const decreaseQuantity = (productId) => {
-    setCart((current) =>
-      current
-        .map((item) =>
-          item.id === productId
-            ? {
-                ...item,
-                quantity: item.quantity - 1,
-              }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
+  setCart((prev) => {
+    const existing = prev.find((item) => item.id === productId)
+
+    if (!existing) return prev
+
+    if (existing.quantity <= 1) {
+      return prev.filter((item) => item.id !== productId)
+    }
+
+    return prev.map((item) =>
+      item.id === productId
+        ? {
+            ...item,
+            quantity: item.quantity - 1,
+          }
+        : item
     )
-  }
+  })
+}
 
   const removeFromCart = (productId) => {
     setCart((current) =>
@@ -946,7 +995,11 @@ const [stockOnly, setStockOnly] = useState(false)
                 return (
                   <div
                     key={product.id}
-                    className="group bg-white border border-slate-200 rounded-2xl overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition duration-300"
+                   onClick={() => {
+  setSelectedProduct(product)
+}}
+  className="group bg-white border border-slate-200 rounded-2xl overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition duration-300 cursor-pointer"
+
                   >
 
                     <div className="relative h-40 sm:h-56 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center overflow-hidden">
@@ -960,9 +1013,10 @@ const [stockOnly, setStockOnly] = useState(false)
                       )}
 
                       <button
-                        onClick={() =>
-                          toggleWishlist(product.id)
-                        }
+ onClick={(e) => {
+  e.stopPropagation()
+  toggleWishlist(product.id)
+}}
                         className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 shadow flex items-center justify-center text-lg hover:scale-110 transition"
                       >
                         {wishlist.includes(product.id)
@@ -1034,7 +1088,10 @@ const [stockOnly, setStockOnly] = useState(false)
                       </div>
 
                       <button
-                        onClick={() => addToCart(product)}
+  onClick={(e) => {
+    e.stopPropagation()
+    addToCart(product)
+  }}
                         disabled={stock <= 0}
                         className="w-full mt-4 sm:mt-5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white py-2.5 sm:py-3 rounded-xl font-black text-xs sm:text-base transition"
                       >
@@ -1876,7 +1933,358 @@ const [stockOnly, setStockOnly] = useState(false)
         </div>
 
       )}
+      {/* PRODUCT DETAILS */}
+     
+{selectedProduct && (
+  <div
+    className="fixed inset-0 z-[140] bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5"
+    onClick={() => {
+  setSelectedProduct(null)
+  setSelectedImage(null)
+}}
+  >
+    <div
+      className="w-full max-w-4xl max-h-[92vh] overflow-y-auto bg-white rounded-3xl shadow-2xl"
+      onClick={(e) => e.stopPropagation()}
+    >
 
+      {/* HEADER */}
+      <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4 bg-white border-b">
+        <h2 className="text-lg sm:text-xl font-black text-slate-900">
+          Product Details
+        </h2>
+
+        <button
+         onClick={() => {
+  setSelectedProduct(null)
+  setSelectedImage(null)
+}}
+          className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* PRODUCT CONTENT */}
+      <div className="grid md:grid-cols-2 gap-6 p-5 sm:p-7">
+
+        {/* IMAGE */}
+        <div>
+        <div className="relative bg-slate-50 rounded-2xl min-h-[300px] flex items-center justify-center overflow-hidden">
+          {selectedProduct.oldPrice > selectedProduct.price && (
+            <span className="absolute top-4 left-4 z-10 bg-red-500 text-white px-3 py-1.5 rounded-full text-sm font-black">
+              {Math.round(
+                ((selectedProduct.oldPrice - selectedProduct.price) /
+                  selectedProduct.oldPrice) *
+                  100
+              )}
+              % OFF
+            </span>
+          )}
+
+          {selectedImage ? (
+  <>
+   <img
+  src={selectedImage}
+  alt={selectedProduct.name}
+  onClick={() => {
+  setZoomImage(selectedImage)
+}}
+  className="w-full h-full object-contain p-5 cursor-zoom-in hover:scale-105 transition duration-300"
+/>
+
+    {getProductImages(selectedProduct).length > 1 && (
+      <>
+        <button
+          onClick={() => {
+            const images = getProductImages(selectedProduct)
+            const currentIndex = images.indexOf(selectedImage)
+            const previousIndex =
+              currentIndex <= 0
+                ? images.length - 1
+                : currentIndex - 1
+
+            setSelectedImage(images[previousIndex])
+          }}
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 shadow-lg hover:bg-white text-slate-800 font-black text-xl"
+        >
+          ‹
+        </button>
+
+        <button
+          onClick={() => {
+            const images = getProductImages(selectedProduct)
+            const currentIndex = images.indexOf(selectedImage)
+            const nextIndex =
+              currentIndex >= images.length - 1
+                ? 0
+                : currentIndex + 1
+
+            setSelectedImage(images[nextIndex])
+          }}
+          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 shadow-lg hover:bg-white text-slate-800 font-black text-xl"
+        >
+          ›
+        </button>
+
+        <span className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-xs font-bold">
+          {getProductImages(selectedProduct).indexOf(selectedImage) + 1}
+          {' / '}
+          {getProductImages(selectedProduct).length}
+        </span>
+      </>
+    )}
+  </>
+) : (
+  <ProductImage product={selectedProduct} />
+)}
+        </div>
+ {getProductImages(selectedProduct).length > 0 && (
+    <div className="flex gap-3 mt-3 overflow-x-auto pb-1">
+      {getProductImages(selectedProduct).map((img, index) => (
+        <button
+          key={index}
+          onClick={() => setSelectedImage(img)}
+          className={`w-20 h-20 flex-shrink-0 rounded-xl border-2 bg-white overflow-hidden transition ${
+            selectedImage === img
+              ? 'border-blue-600 shadow-md'
+              : 'border-slate-200 hover:border-blue-300'
+          }`}
+        >
+          <img
+            src={img}
+            alt={`${selectedProduct.name} ${index + 1}`}
+            className="w-full h-full object-contain p-2"
+          />
+        </button>
+      ))}
+    </div>
+  )}
+
+</div>
+        {/* INFO */}
+        <div>
+
+          {/* CATEGORY */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-bold">
+              {selectedProduct.category}
+            </span>
+
+            {selectedProduct.subcategory && (
+              <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold">
+                {selectedProduct.subcategory}
+              </span>
+            )}
+          </div>
+
+          {/* NAME */}
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
+            {selectedProduct.name}
+          </h1>
+<div className="flex items-center gap-2 mt-4">
+  <button
+  onClick={() => toggleWishlist(selectedProduct.id)}
+  className="w-11 h-11 rounded-xl border border-slate-200 hover:bg-red-50 hover:border-red-200 transition flex items-center justify-center text-xl"
+>
+  {wishlist.includes(selectedProduct.id)
+    ? '❤️'
+    : '♡'}
+</button>
+
+  <button
+    onClick={() => {
+      if (navigator.share) {
+        navigator.share({
+          title: selectedProduct.name,
+          text: `Check out ${selectedProduct.name} on ZA TechMart`,
+          url: window.location.href,
+        })
+      } else {
+        navigator.clipboard.writeText(window.location.href)
+        alert('Product link copied!')
+      }
+    }}
+    className="w-11 h-11 rounded-xl border border-slate-200 hover:bg-blue-50 hover:border-blue-200 transition flex items-center justify-center text-xl"
+  >
+    🔗
+  </button>
+</div>
+          {/* RATING */}
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-yellow-500 font-bold">
+              ★ {selectedProduct.rating || 4.8}
+            </span>
+
+            <span className="text-slate-400 text-sm">
+              Excellent Rating
+            </span>
+          </div>
+
+          {/* PRICE */}
+          <div className="mt-5 flex items-center gap-3 flex-wrap">
+            <span className="text-3xl font-black text-blue-600">
+              ৳{formatPrice(selectedProduct.price)}
+            </span>
+
+            {selectedProduct.oldPrice > selectedProduct.price && (
+              <span className="text-lg text-slate-400 line-through">
+                ৳{formatPrice(selectedProduct.oldPrice)}
+              </span>
+            )}
+          </div>
+
+          {/* STOCK */}
+          <div className="mt-4">
+            {Number(selectedProduct.stock) > 0 ? (
+              <span className="inline-flex items-center gap-2 text-green-600 font-bold">
+                <span className="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                In Stock
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-2 text-red-500 font-bold">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                Out of Stock
+              </span>
+            )}
+          </div>
+
+          {/* DESCRIPTION */}
+          <div className="mt-6">
+            <h3 className="font-black text-lg text-slate-900 mb-2">
+              Description
+            </h3>
+
+            <p className="text-slate-600 leading-7">
+              {selectedProduct.description ||
+                'High-quality electrical product from ZA TechMart. Suitable for reliable and professional electrical applications.'}
+            </p>
+          </div>
+
+          {/* QUANTITY */}
+          {Number(selectedProduct.stock) > 0 && (
+            <div className="mt-6">
+              <p className="font-bold text-slate-800 mb-2">
+                Quantity
+              </p>
+
+              <div className="flex items-center w-fit border border-slate-200 rounded-xl overflow-hidden">
+                <button
+                  onClick={() => decreaseQuantity(selectedProduct.id)}
+                  className="w-11 h-11 bg-slate-50 hover:bg-slate-100 font-black text-lg"
+                >
+                  −
+                </button>
+
+                <span className="w-14 text-center font-black">
+                  {cart.find(
+                    (item) => item.id === selectedProduct.id
+                  )?.quantity || 1}
+                </span>
+
+                <button
+                  onClick={() => increaseQuantity(selectedProduct.id)}
+                  className="w-11 h-11 bg-slate-50 hover:bg-slate-100 font-black text-lg"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          )}
+  {zoomImage && (
+    <div
+      className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center p-4"
+      onClick={() => setZoomImage(null)}
+    >
+      <button
+        onClick={() => setZoomImage(null)}
+        className="absolute top-5 right-5 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white text-3xl font-bold z-10"
+      >
+        ×
+      </button>
+
+      <img
+        src={zoomImage}
+        alt="Zoomed product"
+        onClick={(e) => e.stopPropagation()}
+        className="max-w-full max-h-[90vh] object-contain cursor-zoom-out"
+      />
+    </div>
+  )}
+          {/* BUTTONS */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-7">
+
+            <button
+              disabled={Number(selectedProduct.stock) <= 0}
+              onClick={() => {
+                addToCart(selectedProduct)
+                setSelectedProduct(null)
+              }}
+              className="py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-black transition"
+            >
+              🛒 Add to Cart
+            </button>
+
+            <button
+  disabled={Number(selectedProduct.stock) <= 0}
+  onClick={() => {
+    addToCart(selectedProduct)
+    setSelectedProduct(null)
+    setCartOpen(false)
+    setCheckoutOpen(true)
+  }}
+  className="py-3.5 rounded-xl bg-orange-500 hover:bg-orange-600 disabled:bg-slate-300 text-white font-black transition"
+>
+  ⚡ Buy Now
+</button>
+
+          </div>
+
+        </div>
+      </div>
+
+      {/* SPECIFICATIONS */}
+      <div className="border-t px-5 sm:px-7 py-6">
+        <h3 className="text-xl font-black text-slate-900 mb-4">
+          Specifications
+        </h3>
+
+        <div className="grid sm:grid-cols-2 gap-3">
+
+          <div className="flex justify-between gap-4 bg-slate-50 rounded-xl px-4 py-3">
+            <span className="text-slate-500">Category</span>
+            <span className="font-bold text-slate-800">
+              {selectedProduct.category || 'Electrical'}
+            </span>
+          </div>
+
+          <div className="flex justify-between gap-4 bg-slate-50 rounded-xl px-4 py-3">
+            <span className="text-slate-500">Subcategory</span>
+            <span className="font-bold text-slate-800 text-right">
+              {selectedProduct.subcategory || '—'}
+            </span>
+          </div>
+
+          <div className="flex justify-between gap-4 bg-slate-50 rounded-xl px-4 py-3">
+            <span className="text-slate-500">Stock</span>
+            <span className="font-bold text-slate-800">
+              {selectedProduct.stock || 0} pcs
+            </span>
+          </div>
+
+          <div className="flex justify-between gap-4 bg-slate-50 rounded-xl px-4 py-3">
+            <span className="text-slate-500">Rating</span>
+            <span className="font-bold text-slate-800">
+              ★ {selectedProduct.rating || 4.8}
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+)}
     </div>
   )
 }
