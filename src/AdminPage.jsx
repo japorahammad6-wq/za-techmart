@@ -2,6 +2,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from './lib/supabase'
 
+import BulkProductImport from './BulkProductImport'
+
 const ORDER_STATUSES = [
   'Pending',
   'Confirmed',
@@ -1274,7 +1276,9 @@ description: product.description || '',
               </button>
 
             </div>
-
+<BulkProductImport
+  onImported={loadProducts}
+/>
 
             {/* SEARCH */}
 
