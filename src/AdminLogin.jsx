@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { supabase } from './lib/supabase'
 
@@ -101,4 +100,5 @@ function AdminLogin({ onLogin }) {
     </div>
   )
 }
+
 export default AdminLogin

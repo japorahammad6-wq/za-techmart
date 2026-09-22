@@ -229,6 +229,231 @@ function AdminPage() {
     description: '',
   })
 
+  // DYNAMIC SITE ICONS & BRANDING STATE
+  const defaultSiteIcons = {
+    logo: '⚡',
+    allCategory: '✨',
+    electricalCategory: '⚡',
+    electronicsCategory: '🔌',
+    roboticsCategory: '🤖',
+    microcontrollersCategory: '🧠',
+    sensorsCategory: '📡',
+    automationCategory: '🏭',
+    cart: '🛒',
+    wishlist: '❤️',
+    trackOrder: '📦',
+    phone: '📞',
+    whatsapp: '💬',
+  }
+
+  const [siteIcons, setSiteIcons] = useState(() => {
+    try {
+      const saved = localStorage.getItem('site_custom_icons')
+      return saved ? { ...defaultSiteIcons, ...JSON.parse(saved) } : defaultSiteIcons
+    } catch {
+      return defaultSiteIcons
+    }
+  })
+
+  const handleSaveSiteIcons = () => {
+    localStorage.setItem('site_custom_icons', JSON.stringify(siteIcons))
+    window.dispatchEvent(new Event('site-settings-updated'))
+    alert('Customer Web Icons updated successfully!')
+  }
+
+  const handleResetSiteIcons = () => {
+    if (!confirm('Reset all customer web icons back to default?')) return
+    setSiteIcons(defaultSiteIcons)
+    localStorage.setItem('site_custom_icons', JSON.stringify(defaultSiteIcons))
+    window.dispatchEvent(new Event('site-settings-updated'))
+  }
+
+  // DYNAMIC SITE TEXTS & BRANDING STATE
+  const defaultSiteTexts = {
+    storeNamePrefix: 'ZA',
+    storeNameSuffix: 'TechMart',
+    storeTagline: 'ELECTRICAL • ROBOTICS • IOT',
+    phone: '01871104992',
+    whatsappLabel: 'WhatsApp 24/7',
+    email: 'Zafor2031@gmail.com',
+    categoriesTitle: 'Browse Categories',
+    categoriesSubtitle: 'Special Categories',
+    footerAbout: 'Leading electrical, electronics, robotics, and automation parts supplier in Bangladesh. Quality components for makers, students, and engineers.',
+    footerCopyright: '© 2026 ZA TechMart Bangladesh. All rights reserved.',
+  }
+
+  const [siteTexts, setSiteTexts] = useState(() => {
+    try {
+      const saved = localStorage.getItem('site_custom_texts')
+      return saved ? { ...defaultSiteTexts, ...JSON.parse(saved) } : defaultSiteTexts
+    } catch {
+      return defaultSiteTexts
+    }
+  })
+
+  const handleSaveSiteTexts = () => {
+    localStorage.setItem('site_custom_texts', JSON.stringify(siteTexts))
+    window.dispatchEvent(new Event('site-settings-updated'))
+    alert('Customer Web Texts updated successfully!')
+  }
+
+  const handleResetSiteTexts = () => {
+    if (!confirm('Reset all customer web texts back to default?')) return
+    setSiteTexts(defaultSiteTexts)
+    localStorage.setItem('site_custom_texts', JSON.stringify(defaultSiteTexts))
+    window.dispatchEvent(new Event('site-settings-updated'))
+  }
+
+  // DYNAMIC TICKER & BANNER MANAGEMENT STATE
+  const [tickerText, setTickerText] = useState(() => {
+    return localStorage.getItem('site_ticker_text') || '🚀 Free Delivery on orders over ৳5,000! • ⚡ Authentic Arduino, ESP32 & Industrial Electrical Supplies • 📞 Customer Support: 01871104992 • 💵 Cash on Delivery Available 64 Districts'
+  })
+
+  const [heroSlides, setHeroSlides] = useState(() => {
+    try {
+      const saved = localStorage.getItem('site_hero_slides')
+      return saved ? JSON.parse(saved) : [
+        {
+          id: 1,
+          tag: '⚡ SPECIAL OFFER',
+          title: 'Robotics & IoT Innovation Hub',
+          subtitle: 'Original Arduino, ESP32, Servo Motors & Sensors with fast nationwide delivery.',
+          bg: 'from-slate-950 via-blue-950 to-indigo-950',
+          categoryJump: 'Robotics',
+          badgeText: '🤖 UP TO 20% DISCOUNT',
+          image: '',
+        },
+        {
+          id: 2,
+          tag: '🔌 HEAVY DUTY ELECTRICAL',
+          title: 'Industrial Electrical & Breakers',
+          subtitle: 'Authentic MCBs, Switch Sockets, Magnetic Contactors & Testing Equipment.',
+          bg: 'from-[#0B132B] via-slate-900 to-[#1C2541]',
+          categoryJump: 'Electrical',
+          badgeText: '⚡ 100% GENUINE WARRANTY',
+          image: '',
+        },
+        {
+          id: 3,
+          tag: '🏭 FACTORY AUTOMATION',
+          title: 'PLC, VFD Drives & Controllers',
+          subtitle: 'Advanced industrial automation solutions for factories, machinery, and smart control.',
+          bg: 'from-[#0A192F] via-[#112240] to-slate-900',
+          categoryJump: 'Automation',
+          badgeText: '🏭 TECH SUPPORT INCLUDED',
+          image: '',
+        },
+      ]
+    } catch {
+      return []
+    }
+  })
+
+  const [bannerModal, setBannerModal] = useState(false)
+  const [editingBanner, setEditingBanner] = useState(null)
+  const [bannerForm, setBannerForm] = useState({
+    title: '',
+    subtitle: '',
+    badgeText: '',
+    btnText: 'Shop Now →',
+    categoryJump: 'All',
+    image: '',
+    bg: 'from-slate-950 via-blue-950 to-indigo-950',
+  })
+
+  const handleSaveTicker = () => {
+    localStorage.setItem('site_ticker_text', tickerText)
+    window.dispatchEvent(new Event('site-settings-updated'))
+    alert('Top Ticker Text updated successfully!')
+  }
+
+  const openAddBanner = () => {
+    setEditingBanner(null)
+    setBannerForm({
+      title: '',
+      subtitle: '',
+      badgeText: '',
+      btnText: 'Shop Now →',
+      categoryJump: 'All',
+      image: '',
+      bg: 'from-slate-950 via-blue-950 to-indigo-950',
+    })
+    setBannerModal(true)
+  }
+
+  const openEditBanner = (slide) => {
+    setEditingBanner(slide)
+    setBannerForm({
+      title: slide.title || '',
+      subtitle: slide.subtitle || '',
+      badgeText: slide.badgeText || slide.tag || '',
+      btnText: slide.btnText || 'Shop Now →',
+      categoryJump: slide.categoryJump || 'All',
+      image: slide.image || '',
+      bg: slide.bg || 'from-slate-950 via-blue-950 to-indigo-950',
+    })
+    setBannerModal(true)
+  }
+
+  const handleSaveBanner = (e) => {
+    e.preventDefault()
+    let updated = []
+    if (editingBanner) {
+      updated = heroSlides.map((s) => (s.id === editingBanner.id ? { ...bannerForm, id: editingBanner.id } : s))
+    } else {
+      const newSlide = { ...bannerForm, id: Date.now() }
+      updated = [...heroSlides, newSlide]
+    }
+    setHeroSlides(updated)
+    localStorage.setItem('site_hero_slides', JSON.stringify(updated))
+    window.dispatchEvent(new Event('site-settings-updated'))
+    setBannerModal(false)
+    setEditingBanner(null)
+  }
+
+  const handleDeleteBanner = (id) => {
+    if (!confirm('Are you sure you want to delete this hero banner?')) return
+    const updated = heroSlides.filter((s) => s.id !== id)
+    setHeroSlides(updated)
+    localStorage.setItem('site_hero_slides', JSON.stringify(updated))
+    window.dispatchEvent(new Event('site-settings-updated'))
+  }
+
+  const handleBannerImageUpload = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      // 1. Instant local preview via FileReader base64 DataURL
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const base64Url = event.target?.result
+        if (base64Url) {
+          setBannerForm((prev) => ({ ...prev, image: base64Url }))
+        }
+      }
+      reader.readAsDataURL(file)
+
+      // 2. Attempt Supabase storage upload if available
+      const fileExt = file.name.split('.').pop()
+      const fileName = `banners/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`
+      const { error: uploadError } = await supabase.storage.from('product-images').upload(fileName, file)
+      if (!uploadError) {
+        const { data } = supabase.storage.from('product-images').getPublicUrl(fileName)
+        if (data?.publicUrl) {
+          setBannerForm((prev) => ({ ...prev, image: data.publicUrl }))
+        }
+      }
+    } catch (err) {
+      console.warn('Banner upload storage notice:', err)
+    } finally {
+      setUploading(false)
+      e.target.value = ''
+    }
+  }
+
+
   // --------------------------------
   // CHECK AUTH
   // --------------------------------
@@ -981,6 +1206,28 @@ description: product.description || '',
             }`}
           >
             🛒 Orders
+          </button>
+
+          <button
+            onClick={() => setActiveTab('banners')}
+            className={`px-5 py-3 rounded-xl font-semibold whitespace-nowrap ${
+              activeTab === 'banners'
+                ? 'bg-blue-600 text-white'
+                : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            📢 Banners & Ticker
+          </button>
+
+          <button
+            onClick={() => setActiveTab('icons')}
+            className={`px-5 py-3 rounded-xl font-semibold whitespace-nowrap ${
+              activeTab === 'icons'
+                ? 'bg-blue-600 text-white'
+                : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            🎨 Icons & Texts
           </button>
 
         </div>
@@ -1737,6 +1984,646 @@ description: product.description || '',
 
             </div>
 
+          </div>
+        )}
+
+
+        {/* ================= BANNERS & TICKER ================= */}
+
+        {activeTab === 'banners' && (
+          <div className="space-y-8">
+
+            <div className="mb-4">
+              <h2 className="text-2xl font-bold text-slate-900">
+                📢 Banner & Ticker Management
+              </h2>
+              <p className="text-slate-500">
+                Manage storefront marquee text and main hero slider banners
+              </p>
+            </div>
+
+
+            {/* TOP TICKER BAR SECTION */}
+
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+
+              <h3 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <span>📣</span> Top Announcement Ticker Text
+              </h3>
+
+              <p className="text-sm text-slate-500 mb-4">
+                This text scrolls continuously at the top header of the storefront.
+              </p>
+
+              <div className="flex flex-col md:flex-row gap-3">
+
+                <input
+                  type="text"
+                  value={tickerText}
+                  onChange={(e) => setTickerText(e.target.value)}
+                  className="flex-1 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:border-blue-600 font-medium shadow-sm"
+                  placeholder="Enter ticker announcement text..."
+                />
+
+                <button
+                  onClick={handleSaveTicker}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-md"
+                >
+                  💾 Save Ticker Text
+                </button>
+
+              </div>
+
+            </div>
+
+
+            {/* HERO SLIDER BANNERS SECTION */}
+
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+
+              <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <span>🖼️</span> Hero Slider Banners
+                  </h3>
+                  <p className="text-sm text-slate-500">
+                    Add, edit, or remove promotional banners shown on the homepage hero carousel.
+                  </p>
+                </div>
+
+                <button
+                  onClick={openAddBanner}
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-md flex items-center gap-2"
+                >
+                  <span>➕</span> Add New Banner
+                </button>
+
+              </div>
+
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                {heroSlides.map((slide, index) => (
+                  <div
+                    key={slide.id || index}
+                    className="border border-slate-200 rounded-2xl p-5 bg-gradient-to-br from-slate-50 to-white shadow-sm flex flex-col justify-between"
+                  >
+
+                    <div>
+
+                      {slide.image ? (
+                        <img
+                          src={slide.image}
+                          alt={slide.title}
+                          className="w-full h-40 object-cover rounded-xl mb-4 shadow-inner"
+                        />
+                      ) : (
+                        <div className="w-full h-40 bg-slate-900 text-white rounded-xl mb-4 p-4 flex flex-col justify-center items-center text-center shadow-inner">
+                          <span className="text-[11px] bg-blue-600 text-white px-2.5 py-1 rounded-full font-bold mb-2 uppercase tracking-wide">
+                            {slide.badgeText || slide.tag || 'PROMO'}
+                          </span>
+                          <h4 className="font-bold text-base line-clamp-1">{slide.title}</h4>
+                          <p className="text-xs text-slate-300 line-clamp-2 mt-1">{slide.subtitle}</p>
+                        </div>
+                      )}
+
+                      <div className="space-y-1.5 text-sm">
+
+                        <p className="font-bold text-slate-900 line-clamp-1">
+                          {slide.title}
+                        </p>
+
+                        <p className="text-xs text-slate-500 line-clamp-2">
+                          {slide.subtitle}
+                        </p>
+
+                        <div className="pt-2 flex flex-wrap gap-2 text-xs">
+                          <span className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg font-semibold">
+                            Category: {slide.categoryJump || 'All'}
+                          </span>
+
+                          <span className="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-lg font-semibold">
+                            Tag: {slide.badgeText || slide.tag || 'N/A'}
+                          </span>
+                        </div>
+
+                      </div>
+
+                    </div>
+
+
+                    <div className="flex gap-2 mt-6 pt-4 border-t border-slate-100">
+
+                      <button
+                        onClick={() => openEditBanner(slide)}
+                        className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-sm transition"
+                      >
+                        ✏️ Edit
+                      </button>
+
+                      <button
+                        onClick={() => handleDeleteBanner(slide.id)}
+                        className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-4 py-2 rounded-xl text-sm transition"
+                      >
+                        🗑️ Delete
+                      </button>
+
+                    </div>
+
+                  </div>
+                ))}
+
+              </div>
+
+            </div>
+
+          </div>
+        )}
+
+
+        {/* ================= CUSTOM SITE ICONS ================= */}
+
+        {activeTab === 'icons' && (
+          <div className="space-y-8">
+            <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900">
+                  🎨 Customer Web Icon Customizer
+                </h2>
+                <p className="text-slate-500">
+                  Dynamically customize all icons/emojis displayed across the storefront in real-time.
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleResetSiteIcons}
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl transition text-sm"
+                >
+                  🔄 Reset Defaults
+                </button>
+
+                <button
+                  onClick={handleSaveSiteIcons}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-xl transition shadow-md text-sm"
+                >
+                  💾 Save All Icons
+                </button>
+              </div>
+            </div>
+
+            {/* HEADER & NAV ICONS CARD */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <h3 className="text-lg font-bold text-slate-900 mb-4 border-b pb-3 flex items-center gap-2">
+                <span>🌐</span> Store Header & Navigation Icons
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    Brand Logo Icon
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="w-11 h-11 bg-blue-600 text-white font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
+                      {siteIcons.logo}
+                    </span>
+                    <input
+                      type="text"
+                      value={siteIcons.logo}
+                      onChange={(e) => setSiteIcons({ ...siteIcons, logo: e.target.value })}
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    Cart Icon
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="w-11 h-11 bg-slate-100 text-slate-800 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
+                      {siteIcons.cart}
+                    </span>
+                    <input
+                      type="text"
+                      value={siteIcons.cart}
+                      onChange={(e) => setSiteIcons({ ...siteIcons, cart: e.target.value })}
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    Wishlist Icon
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="w-11 h-11 bg-red-50 text-red-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
+                      {siteIcons.wishlist}
+                    </span>
+                    <input
+                      type="text"
+                      value={siteIcons.wishlist}
+                      onChange={(e) => setSiteIcons({ ...siteIcons, wishlist: e.target.value })}
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    Track Order Icon
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="w-11 h-11 bg-slate-100 text-slate-800 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
+                      {siteIcons.trackOrder}
+                    </span>
+                    <input
+                      type="text"
+                      value={siteIcons.trackOrder}
+                      onChange={(e) => setSiteIcons({ ...siteIcons, trackOrder: e.target.value })}
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    Phone / Call Support
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="w-11 h-11 bg-slate-100 text-slate-800 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
+                      {siteIcons.phone}
+                    </span>
+                    <input
+                      type="text"
+                      value={siteIcons.phone}
+                      onChange={(e) => setSiteIcons({ ...siteIcons, phone: e.target.value })}
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    WhatsApp Icon
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="w-11 h-11 bg-green-50 text-green-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
+                      {siteIcons.whatsapp}
+                    </span>
+                    <input
+                      type="text"
+                      value={siteIcons.whatsapp}
+                      onChange={(e) => setSiteIcons({ ...siteIcons, whatsapp: e.target.value })}
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* PRODUCT CATEGORIES ICONS CARD */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <h3 className="text-lg font-bold text-slate-900 mb-4 border-b pb-3 flex items-center gap-2">
+                <span>📁</span> Store Product Category Icons
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    ✨ All Products Catalog
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="w-11 h-11 bg-slate-100 text-slate-800 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
+                      {siteIcons.allCategory}
+                    </span>
+                    <input
+                      type="text"
+                      value={siteIcons.allCategory}
+                      onChange={(e) => setSiteIcons({ ...siteIcons, allCategory: e.target.value })}
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    ⚡ Electrical Category
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="w-11 h-11 bg-amber-50 text-amber-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
+                      {siteIcons.electricalCategory}
+                    </span>
+                    <input
+                      type="text"
+                      value={siteIcons.electricalCategory}
+                      onChange={(e) => setSiteIcons({ ...siteIcons, electricalCategory: e.target.value })}
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    🔌 Electronics Category
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="w-11 h-11 bg-blue-50 text-blue-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
+                      {siteIcons.electronicsCategory}
+                    </span>
+                    <input
+                      type="text"
+                      value={siteIcons.electronicsCategory}
+                      onChange={(e) => setSiteIcons({ ...siteIcons, electronicsCategory: e.target.value })}
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    🤖 Robotics Category
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="w-11 h-11 bg-purple-50 text-purple-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
+                      {siteIcons.roboticsCategory}
+                    </span>
+                    <input
+                      type="text"
+                      value={siteIcons.roboticsCategory}
+                      onChange={(e) => setSiteIcons({ ...siteIcons, roboticsCategory: e.target.value })}
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    🧠 Microcontrollers Category
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="w-11 h-11 bg-indigo-50 text-indigo-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
+                      {siteIcons.microcontrollersCategory}
+                    </span>
+                    <input
+                      type="text"
+                      value={siteIcons.microcontrollersCategory}
+                      onChange={(e) => setSiteIcons({ ...siteIcons, microcontrollersCategory: e.target.value })}
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    📡 Sensors Category
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="w-11 h-11 bg-teal-50 text-teal-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
+                      {siteIcons.sensorsCategory}
+                    </span>
+                    <input
+                      type="text"
+                      value={siteIcons.sensorsCategory}
+                      onChange={(e) => setSiteIcons({ ...siteIcons, sensorsCategory: e.target.value })}
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
+                    🏭 Automation Category
+                  </label>
+                  <div className="flex gap-2">
+                    <span className="w-11 h-11 bg-orange-50 text-orange-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
+                      {siteIcons.automationCategory}
+                    </span>
+                    <input
+                      type="text"
+                      value={siteIcons.automationCategory}
+                      onChange={(e) => setSiteIcons({ ...siteIcons, automationCategory: e.target.value })}
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end gap-3">
+                <button
+                  onClick={handleResetSiteIcons}
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-3 rounded-xl transition"
+                >
+                  🔄 Reset to Defaults
+                </button>
+
+                <button
+                  onClick={handleSaveSiteIcons}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl transition shadow-md"
+                >
+                  💾 Save All Icons
+                </button>
+              </div>
+            </div>
+
+            {/* STORE CONTENT & TEXTS CARD */}
+            <div className="bg-white rounded-2xl shadow-sm p-6 mt-8">
+              <div className="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <span>✍️</span> Store Name, Header & Footer Texts Customizer
+                </h3>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleResetSiteTexts}
+                    className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-xs transition"
+                  >
+                    🔄 Reset Texts
+                  </button>
+                  <button
+                    onClick={handleSaveSiteTexts}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-1.5 rounded-lg text-xs transition shadow-xs"
+                  >
+                    💾 Save Texts
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {/* Store Name & Tagline */}
+                <div>
+                  <h4 className="text-xs font-black uppercase text-blue-600 mb-3 tracking-wider">
+                    1. Brand & Header Title
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Store Name Prefix
+                      </label>
+                      <input
+                        type="text"
+                        value={siteTexts.storeNamePrefix}
+                        onChange={(e) => setSiteTexts({ ...siteTexts, storeNamePrefix: e.target.value })}
+                        placeholder="e.g. ZA"
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-sm focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Store Name Suffix
+                      </label>
+                      <input
+                        type="text"
+                        value={siteTexts.storeNameSuffix}
+                        onChange={(e) => setSiteTexts({ ...siteTexts, storeNameSuffix: e.target.value })}
+                        placeholder="e.g. TechMart"
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-sm focus:border-blue-600 focus:outline-none text-blue-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Brand Subtitle Tagline
+                      </label>
+                      <input
+                        type="text"
+                        value={siteTexts.storeTagline}
+                        onChange={(e) => setSiteTexts({ ...siteTexts, storeTagline: e.target.value })}
+                        placeholder="e.g. ELECTRICAL • ROBOTICS • IOT"
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-xs focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Info */}
+                <div>
+                  <h4 className="text-xs font-black uppercase text-blue-600 mb-3 tracking-wider">
+                    2. Support & Contact Numbers
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Customer Support Phone
+                      </label>
+                      <input
+                        type="text"
+                        value={siteTexts.phone}
+                        onChange={(e) => setSiteTexts({ ...siteTexts, phone: e.target.value })}
+                        placeholder="01871104992"
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-medium text-sm focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        WhatsApp Label
+                      </label>
+                      <input
+                        type="text"
+                        value={siteTexts.whatsappLabel}
+                        onChange={(e) => setSiteTexts({ ...siteTexts, whatsappLabel: e.target.value })}
+                        placeholder="WhatsApp 24/7"
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-sm focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Support Email
+                      </label>
+                      <input
+                        type="email"
+                        value={siteTexts.email}
+                        onChange={(e) => setSiteTexts({ ...siteTexts, email: e.target.value })}
+                        placeholder="Zafor2031@gmail.com"
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-sm focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Category Titles */}
+                <div>
+                  <h4 className="text-xs font-black uppercase text-blue-600 mb-3 tracking-wider">
+                    3. Category Section Titles
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Categories Main Title
+                      </label>
+                      <input
+                        type="text"
+                        value={siteTexts.categoriesTitle}
+                        onChange={(e) => setSiteTexts({ ...siteTexts, categoriesTitle: e.target.value })}
+                        placeholder="Browse Categories"
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-sm focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Categories Subtitle Label
+                      </label>
+                      <input
+                        type="text"
+                        value={siteTexts.categoriesSubtitle}
+                        onChange={(e) => setSiteTexts({ ...siteTexts, categoriesSubtitle: e.target.value })}
+                        placeholder="Special Categories"
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-sm focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer Info */}
+                <div>
+                  <h4 className="text-xs font-black uppercase text-blue-600 mb-3 tracking-wider">
+                    4. Footer Description & Copyright
+                  </h4>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Footer About Description
+                      </label>
+                      <textarea
+                        rows="2"
+                        value={siteTexts.footerAbout}
+                        onChange={(e) => setSiteTexts({ ...siteTexts, footerAbout: e.target.value })}
+                        placeholder="Write store about summary for footer..."
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-sm focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Footer Copyright Notice
+                      </label>
+                      <input
+                        type="text"
+                        value={siteTexts.footerCopyright}
+                        onChange={(e) => setSiteTexts({ ...siteTexts, footerCopyright: e.target.value })}
+                        placeholder="© 2026 ZA TechMart Bangladesh. All rights reserved."
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-sm focus:border-blue-600 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end gap-3">
+                <button
+                  onClick={handleResetSiteTexts}
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-3 rounded-xl transition"
+                >
+                  🔄 Reset Texts Defaults
+                </button>
+
+                <button
+                  onClick={handleSaveSiteTexts}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl transition shadow-md"
+                >
+                  💾 Save All Site Texts
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -2557,6 +3444,165 @@ description: product.description || '',
               </button>
 
             </div>
+
+          </div>
+
+        </div>
+      )}
+
+
+      {/* BANNER MODAL */}
+
+      {bannerModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl my-8">
+
+            <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+              <h3 className="text-xl font-bold text-slate-900">
+                {editingBanner ? '✏️ Edit Hero Banner' : '➕ Add New Hero Banner'}
+              </h3>
+              <button
+                onClick={() => setBannerModal(false)}
+                className="text-slate-400 hover:text-slate-600 font-bold text-xl px-2"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveBanner} className="space-y-4">
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  Banner Title *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={bannerForm.title}
+                  onChange={(e) => setBannerForm({ ...bannerForm, title: e.target.value })}
+                  placeholder="e.g. Robotics & IoT Innovation Hub"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-blue-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  Subtitle Description
+                </label>
+                <textarea
+                  rows="2"
+                  value={bannerForm.subtitle}
+                  onChange={(e) => setBannerForm({ ...bannerForm, subtitle: e.target.value })}
+                  placeholder="e.g. Original Arduino, ESP32, Servo Motors & Sensors..."
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-blue-600"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                    Badge / Tag Text
+                  </label>
+                  <input
+                    type="text"
+                    value={bannerForm.badgeText}
+                    onChange={(e) => setBannerForm({ ...bannerForm, badgeText: e.target.value })}
+                    placeholder="e.g. 🤖 UP TO 20% DISCOUNT"
+                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-blue-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                    Category Jump Link
+                  </label>
+                  <select
+                    value={bannerForm.categoryJump}
+                    onChange={(e) => setBannerForm({ ...bannerForm, categoryJump: e.target.value })}
+                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:border-blue-600"
+                  >
+                    <option value="All">All Products</option>
+                    {CATEGORY_OPTIONS.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  🖼️ Banner Image (Gallery Upload or URL)
+                </label>
+
+                {/* Direct file upload from Gallery / Device */}
+                <div className="mb-3">
+                  <label className="flex items-center justify-center gap-2 border-2 border-dashed border-blue-300 bg-blue-50/50 hover:bg-blue-50 text-blue-700 font-bold py-3 px-4 rounded-xl cursor-pointer transition text-sm">
+                    <span>📁</span> Select Image from Gallery / File
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBannerImageUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+
+                {/* Image Preview if available */}
+                {bannerForm.image && (
+                  <div className="relative mb-3 rounded-xl overflow-hidden border border-slate-200 bg-slate-900 group">
+                    <img
+                      src={bannerForm.image}
+                      alt="Banner Preview"
+                      className="w-full h-36 object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setBannerForm((prev) => ({ ...prev, image: '' }))}
+                      className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-2.5 py-1.5 rounded-lg shadow transition flex items-center gap-1"
+                    >
+                      🗑️ Remove Image
+                    </button>
+                  </div>
+                )}
+
+                {/* Direct URL Input fallback */}
+                <div>
+                  <input
+                    type="url"
+                    value={bannerForm.image}
+                    onChange={(e) => setBannerForm({ ...bannerForm, image: e.target.value })}
+                    placeholder="or paste Image URL (https://...)"
+                    className="w-full border border-slate-200 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:border-blue-600 text-xs"
+                  />
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  Leave blank to use default corporate dark gradient style.
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-4 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setBannerModal(false)}
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-md"
+                >
+                  {editingBanner ? 'Update Banner' : 'Create Banner'}
+                </button>
+              </div>
+
+            </form>
 
           </div>
 
