@@ -128,6 +128,20 @@ const getDeliveryCharge = (district) => {
 const formatPrice = (price) =>
   Number(price || 0).toLocaleString('en-BD')
 
+export const isImageUrl = (val) => {
+  if (typeof val !== 'string') return false
+  const str = val.trim()
+  return str.startsWith('http://') || str.startsWith('https://') || str.startsWith('data:image/') || str.startsWith('/')
+}
+
+export function RenderIcon({ icon, fallback = '⚡', className = 'w-5 h-5' }) {
+  const iconStr = String(icon || fallback).trim()
+  if (isImageUrl(iconStr)) {
+    return <img src={iconStr} alt="" className={`${className} object-contain inline-block`} />
+  }
+  return <span>{iconStr}</span>
+}
+
 function ProductImage({ product }) {
   const imageUrl =
     product.image_url ||
@@ -699,8 +713,8 @@ function ShopApp() {
             </div>
           </div>
           <div className="hidden sm:flex items-center gap-4 text-[11px] shrink-0 font-semibold text-slate-200">
-            <span>{siteIcons.phone || '📞'} {siteTexts.phone || '01871104992'}</span>
-            <span>{siteIcons.whatsapp || '💬'} {siteTexts.whatsappLabel || 'WhatsApp 24/7'}</span>
+            <span className="flex items-center gap-1.5"><RenderIcon icon={siteIcons.phone} fallback="📞" className="w-3.5 h-3.5" /> {siteTexts.phone || '01871104992'}</span>
+            <span className="flex items-center gap-1.5"><RenderIcon icon={siteIcons.whatsapp} fallback="💬" className="w-3.5 h-3.5" /> {siteTexts.whatsappLabel || 'WhatsApp 24/7'}</span>
           </div>
         </div>
       </div>
@@ -729,8 +743,8 @@ function ShopApp() {
               }}
               className="flex items-center gap-3 shrink-0 group text-left"
             >
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xl font-black shadow-md shadow-blue-500/25 group-hover:scale-105 transition">
-                {siteIcons.logo || '⚡'}
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xl font-black shadow-md shadow-blue-500/25 group-hover:scale-105 transition p-1.5">
+                <RenderIcon icon={siteIcons.logo} fallback="⚡" className="w-6 h-6 sm:w-7 sm:h-7" />
               </div>
 
               <div>
@@ -752,8 +766,8 @@ function ShopApp() {
                 placeholder="Search Arduino, ESP32, Sensors, MCB, Relay..."
                 className="w-full bg-slate-100/90 border border-slate-200/90 text-slate-900 placeholder-slate-400 rounded-2xl py-2.5 pl-11 pr-10 outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-sm transition"
               />
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base text-slate-400">
-                {siteIcons.search || '🔍'}
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 flex items-center">
+                <RenderIcon icon={siteIcons.search} fallback="🔍" className="w-4 h-4" />
               </span>
               {search && (
                 <button
@@ -781,7 +795,7 @@ function ShopApp() {
                 onClick={() => setTrackingOpen(true)}
                 className="hover:text-blue-600 transition flex items-center gap-1.5"
               >
-                <span>{siteIcons.trackOrder || '📦'}</span> Track Order
+                <RenderIcon icon={siteIcons.trackOrder} fallback="📦" className="w-4 h-4" /> Track Order
               </button>
             </nav>
 
@@ -793,10 +807,10 @@ function ShopApp() {
                   setCategory('All')
                   document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })
                 }}
-                className="relative p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:border-red-300 hover:text-red-500 transition bg-white"
+                className="relative p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:border-red-300 hover:text-red-500 transition bg-white flex items-center justify-center"
                 title="Wishlist"
               >
-                <span className="text-lg">{siteIcons.wishlist || '❤️'}</span>
+                <RenderIcon icon={siteIcons.wishlist} fallback="❤️" className="w-5 h-5" />
                 {wishlist.length > 0 && (
                   <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center">
                     {wishlist.length}
@@ -809,7 +823,7 @@ function ShopApp() {
                 onClick={() => setCartOpen(true)}
                 className="relative bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2.5 rounded-xl font-bold text-sm transition shadow-md shadow-blue-500/20 flex items-center gap-2"
               >
-                <span className="text-lg">{siteIcons.cart || '🛒'}</span>
+                <RenderIcon icon={siteIcons.cart} fallback="🛒" className="w-5 h-5" />
                 <span className="hidden sm:inline">Cart</span>
                 {totalCartCount > 0 && (
                   <span className="bg-white text-blue-700 text-xs font-black px-2 py-0.5 rounded-full shadow-xs">
@@ -1005,7 +1019,7 @@ function ShopApp() {
                     : 'bg-white border border-slate-200 text-slate-700 hover:border-blue-400 hover:bg-slate-50'
                 }`}
               >
-                <span className="text-base">{cat.icon}</span>
+                <RenderIcon icon={cat.icon} fallback="✨" className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span>{cat.name}</span>
               </button>
             )

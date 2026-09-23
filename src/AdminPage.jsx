@@ -2175,240 +2175,41 @@ description: product.description || '',
 
             {/* HEADER & NAV ICONS CARD */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h3 className="text-lg font-bold text-slate-900 mb-4 border-b pb-3 flex items-center gap-2">
-                <span>🌐</span> Store Header & Navigation Icons
-              </h3>
+              <div className="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <span>🌐</span> Store Header & Navigation Icons (Upload Picture or Emoji)
+                </h3>
+                <span className="text-xs text-blue-600 font-bold bg-blue-50 px-3 py-1 rounded-full">
+                  📁 Click 📁 button on any icon to pick from Gallery
+                </span>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                    Brand Logo Icon
-                  </label>
-                  <div className="flex gap-2">
-                    <span className="w-11 h-11 bg-blue-600 text-white font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
-                      {siteIcons.logo}
-                    </span>
-                    <input
-                      type="text"
-                      value={siteIcons.logo}
-                      onChange={(e) => setSiteIcons({ ...siteIcons, logo: e.target.value })}
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                    Cart Icon
-                  </label>
-                  <div className="flex gap-2">
-                    <span className="w-11 h-11 bg-slate-100 text-slate-800 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
-                      {siteIcons.cart}
-                    </span>
-                    <input
-                      type="text"
-                      value={siteIcons.cart}
-                      onChange={(e) => setSiteIcons({ ...siteIcons, cart: e.target.value })}
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                    Wishlist Icon
-                  </label>
-                  <div className="flex gap-2">
-                    <span className="w-11 h-11 bg-red-50 text-red-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
-                      {siteIcons.wishlist}
-                    </span>
-                    <input
-                      type="text"
-                      value={siteIcons.wishlist}
-                      onChange={(e) => setSiteIcons({ ...siteIcons, wishlist: e.target.value })}
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                    Track Order Icon
-                  </label>
-                  <div className="flex gap-2">
-                    <span className="w-11 h-11 bg-slate-100 text-slate-800 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
-                      {siteIcons.trackOrder}
-                    </span>
-                    <input
-                      type="text"
-                      value={siteIcons.trackOrder}
-                      onChange={(e) => setSiteIcons({ ...siteIcons, trackOrder: e.target.value })}
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                    Phone / Call Support
-                  </label>
-                  <div className="flex gap-2">
-                    <span className="w-11 h-11 bg-slate-100 text-slate-800 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
-                      {siteIcons.phone}
-                    </span>
-                    <input
-                      type="text"
-                      value={siteIcons.phone}
-                      onChange={(e) => setSiteIcons({ ...siteIcons, phone: e.target.value })}
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                    WhatsApp Icon
-                  </label>
-                  <div className="flex gap-2">
-                    <span className="w-11 h-11 bg-green-50 text-green-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
-                      {siteIcons.whatsapp}
-                    </span>
-                    <input
-                      type="text"
-                      value={siteIcons.whatsapp}
-                      onChange={(e) => setSiteIcons({ ...siteIcons, whatsapp: e.target.value })}
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
-                    />
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                <IconInputField label="Brand Logo Icon" iconKey="logo" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-blue-600 text-white" />
+                <IconInputField label="Cart Icon" iconKey="cart" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-slate-100 text-slate-800" />
+                <IconInputField label="Wishlist Icon" iconKey="wishlist" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-red-50 text-red-600" />
+                <IconInputField label="Track Order Icon" iconKey="trackOrder" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-slate-100 text-slate-800" />
+                <IconInputField label="Phone Support" iconKey="phone" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-slate-100 text-slate-800" />
+                <IconInputField label="WhatsApp Support" iconKey="whatsapp" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-green-50 text-green-600" />
               </div>
             </div>
 
             {/* PRODUCT CATEGORIES ICONS CARD */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h3 className="text-lg font-bold text-slate-900 mb-4 border-b pb-3 flex items-center gap-2">
-                <span>📁</span> Store Product Category Icons
-              </h3>
+              <div className="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <span>📁</span> Store Product Category Icons (Upload Picture or Emoji)
+                </h3>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                    ✨ All Products Catalog
-                  </label>
-                  <div className="flex gap-2">
-                    <span className="w-11 h-11 bg-slate-100 text-slate-800 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
-                      {siteIcons.allCategory}
-                    </span>
-                    <input
-                      type="text"
-                      value={siteIcons.allCategory}
-                      onChange={(e) => setSiteIcons({ ...siteIcons, allCategory: e.target.value })}
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                    ⚡ Electrical Category
-                  </label>
-                  <div className="flex gap-2">
-                    <span className="w-11 h-11 bg-amber-50 text-amber-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
-                      {siteIcons.electricalCategory}
-                    </span>
-                    <input
-                      type="text"
-                      value={siteIcons.electricalCategory}
-                      onChange={(e) => setSiteIcons({ ...siteIcons, electricalCategory: e.target.value })}
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                    🔌 Electronics Category
-                  </label>
-                  <div className="flex gap-2">
-                    <span className="w-11 h-11 bg-blue-50 text-blue-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
-                      {siteIcons.electronicsCategory}
-                    </span>
-                    <input
-                      type="text"
-                      value={siteIcons.electronicsCategory}
-                      onChange={(e) => setSiteIcons({ ...siteIcons, electronicsCategory: e.target.value })}
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                    🤖 Robotics Category
-                  </label>
-                  <div className="flex gap-2">
-                    <span className="w-11 h-11 bg-purple-50 text-purple-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
-                      {siteIcons.roboticsCategory}
-                    </span>
-                    <input
-                      type="text"
-                      value={siteIcons.roboticsCategory}
-                      onChange={(e) => setSiteIcons({ ...siteIcons, roboticsCategory: e.target.value })}
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                    🧠 Microcontrollers Category
-                  </label>
-                  <div className="flex gap-2">
-                    <span className="w-11 h-11 bg-indigo-50 text-indigo-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
-                      {siteIcons.microcontrollersCategory}
-                    </span>
-                    <input
-                      type="text"
-                      value={siteIcons.microcontrollersCategory}
-                      onChange={(e) => setSiteIcons({ ...siteIcons, microcontrollersCategory: e.target.value })}
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                    📡 Sensors Category
-                  </label>
-                  <div className="flex gap-2">
-                    <span className="w-11 h-11 bg-teal-50 text-teal-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
-                      {siteIcons.sensorsCategory}
-                    </span>
-                    <input
-                      type="text"
-                      value={siteIcons.sensorsCategory}
-                      onChange={(e) => setSiteIcons({ ...siteIcons, sensorsCategory: e.target.value })}
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1">
-                    🏭 Automation Category
-                  </label>
-                  <div className="flex gap-2">
-                    <span className="w-11 h-11 bg-orange-50 text-orange-600 font-bold text-xl rounded-xl flex items-center justify-center shrink-0">
-                      {siteIcons.automationCategory}
-                    </span>
-                    <input
-                      type="text"
-                      value={siteIcons.automationCategory}
-                      onChange={(e) => setSiteIcons({ ...siteIcons, automationCategory: e.target.value })}
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-center focus:border-blue-600 focus:outline-none"
-                    />
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                <IconInputField label="✨ All Catalog" iconKey="allCategory" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-slate-100 text-slate-800" />
+                <IconInputField label="⚡ Electrical" iconKey="electricalCategory" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-amber-50 text-amber-600" />
+                <IconInputField label="🔌 Electronics" iconKey="electronicsCategory" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-blue-50 text-blue-600" />
+                <IconInputField label="🤖 Robotics" iconKey="roboticsCategory" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-purple-50 text-purple-600" />
+                <IconInputField label="🧠 Microcontrollers" iconKey="microcontrollersCategory" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-indigo-50 text-indigo-600" />
+                <IconInputField label="📡 Sensors" iconKey="sensorsCategory" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-teal-50 text-teal-600" />
+                <IconInputField label="🏭 Automation" iconKey="automationCategory" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-orange-50 text-orange-600" />
               </div>
 
               <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end gap-3">
@@ -3638,6 +3439,78 @@ function StatCard({
         {value}
       </p>
 
+    </div>
+  )
+}
+
+function IconInputField({ label, iconKey, siteIcons, setSiteIcons, defaultBg = 'bg-slate-100 text-slate-800' }) {
+  const currentValue = siteIcons[iconKey] || ''
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (evt) => {
+      const dataUrl = evt.target?.result
+      if (dataUrl) {
+        setSiteIcons((prev) => ({ ...prev, [iconKey]: dataUrl }))
+      }
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  const isImage = typeof currentValue === 'string' && (
+    currentValue.startsWith('data:image/') ||
+    currentValue.startsWith('http://') ||
+    currentValue.startsWith('https://') ||
+    currentValue.startsWith('/')
+  )
+
+  return (
+    <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 flex flex-col justify-between space-y-3 shadow-xs">
+      <div className="flex justify-between items-center gap-2">
+        <label className="block text-xs font-black uppercase text-slate-600 tracking-wider">
+          {label}
+        </label>
+        {isImage && (
+          <button
+            type="button"
+            onClick={() => setSiteIcons((prev) => ({ ...prev, [iconKey]: '' }))}
+            className="text-[10px] bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full hover:bg-red-200 transition"
+          >
+            Clear Pic
+          </button>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <div className={`w-11 h-11 ${defaultBg} font-bold text-xl rounded-xl flex items-center justify-center shrink-0 overflow-hidden border border-slate-200 shadow-xs p-1`}>
+          {isImage ? (
+            <img src={currentValue} alt="" className="w-full h-full object-contain" />
+          ) : (
+            <span>{currentValue || '⚡'}</span>
+          )}
+        </div>
+
+        <input
+          type="text"
+          value={currentValue}
+          onChange={(e) => setSiteIcons((prev) => ({ ...prev, [iconKey]: e.target.value }))}
+          placeholder="Emoji / URL"
+          className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-xs font-bold text-center focus:border-blue-600 focus:outline-none bg-white"
+        />
+
+        <label className="bg-blue-600 hover:bg-blue-700 text-white font-bold p-2.5 rounded-xl cursor-pointer transition text-xs shrink-0 flex items-center gap-1 shadow-sm" title="Upload Icon Picture from Gallery">
+          <span>📁</span>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+        </label>
+      </div>
     </div>
   )
 }
