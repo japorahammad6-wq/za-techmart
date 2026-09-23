@@ -249,7 +249,16 @@ function AdminPage() {
   const [siteIcons, setSiteIcons] = useState(() => {
     try {
       const saved = localStorage.getItem('site_custom_icons')
-      return saved ? { ...defaultSiteIcons, ...JSON.parse(saved) } : defaultSiteIcons
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        Object.keys(parsed).forEach((key) => {
+          if (typeof parsed[key] === 'string' && parsed[key].includes('Image Uploaded')) {
+            parsed[key] = defaultSiteIcons[key] || '⚡'
+          }
+        })
+        return { ...defaultSiteIcons, ...parsed }
+      }
+      return defaultSiteIcons
     } catch {
       return defaultSiteIcons
     }
@@ -1612,6 +1621,10 @@ description: product.description || '',
                                   alt={product.name}
                                   className="w-14 h-14 rounded-xl object-cover border"
                                 />
+                              ) : typeof product.icon === 'string' && (product.icon.startsWith('data:image/') || product.icon.startsWith('http://') || product.icon.startsWith('https://') || product.icon.startsWith('/')) ? (
+                                <div className="w-14 h-14 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden border p-1">
+                                  <img src={product.icon} alt="" className="w-full h-full object-contain" />
+                                </div>
                               ) : (
                                 <div className="w-14 h-14 rounded-xl bg-slate-100 flex items-center justify-center text-2xl">
                                   {product.icon || '⚡'}
@@ -3460,12 +3473,15 @@ function IconInputField({ label, iconKey, siteIcons, setSiteIcons, defaultBg = '
     e.target.value = ''
   }
 
-  const isImage = typeof currentValue === 'string' && (
-    currentValue.startsWith('data:image/') ||
+  const isBase64Image = typeof currentValue === 'string' && currentValue.startsWith('data:image/')
+  const isWebUrlImage = typeof currentValue === 'string' && (
     currentValue.startsWith('http://') ||
     currentValue.startsWith('https://') ||
-    currentValue.startsWith('/')
+    currentValue.startsWith('/') ||
+    currentValue.startsWith('blob:') ||
+    currentValue.includes(';base64,')
   )
+  const isImage = isBase64Image || isWebUrlImage
 
   return (
     <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 flex flex-col justify-between space-y-3 shadow-xs">
@@ -3493,13 +3509,20 @@ function IconInputField({ label, iconKey, siteIcons, setSiteIcons, defaultBg = '
           )}
         </div>
 
-        <input
-          type="text"
-          value={currentValue.startsWith('data:image/') ? '📁 Image Uploaded' : currentValue}
-          onChange={(e) => setSiteIcons((prev) => ({ ...prev, [iconKey]: e.target.value }))}
-          placeholder="Emoji / URL"
-          className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-xs font-bold text-center focus:border-blue-600 focus:outline-none bg-white truncate"
-        />
+        {isBase64Image ? (
+          <div className="flex-1 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2 text-blue-700 text-xs font-bold text-center flex items-center justify-center gap-1.5 overflow-hidden">
+            <span>📷</span>
+            <span className="truncate">Gallery Image Loaded</span>
+          </div>
+        ) : (
+          <input
+            type="text"
+            value={currentValue}
+            onChange={(e) => setSiteIcons((prev) => ({ ...prev, [iconKey]: e.target.value }))}
+            placeholder="Emoji / URL"
+            className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-xs font-bold text-center focus:border-blue-600 focus:outline-none bg-white"
+          />
+        )}
 
         <label className="bg-blue-600 hover:bg-blue-700 text-white font-bold p-2.5 rounded-xl cursor-pointer transition text-xs shrink-0 flex items-center gap-1 shadow-sm" title="Upload Icon Picture from Gallery">
           <span>📁</span>

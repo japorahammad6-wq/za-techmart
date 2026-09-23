@@ -131,7 +131,16 @@ const formatPrice = (price) =>
 export const isImageUrl = (val) => {
   if (typeof val !== 'string') return false
   const str = val.trim()
-  return str.startsWith('http://') || str.startsWith('https://') || str.startsWith('data:image/') || str.startsWith('/')
+  if (!str) return false
+  return (
+    str.startsWith('http://') ||
+    str.startsWith('https://') ||
+    str.startsWith('data:image/') ||
+    str.startsWith('data:application/') ||
+    str.startsWith('/') ||
+    str.startsWith('blob:') ||
+    str.includes(';base64,')
+  )
 }
 
 export function RenderIcon({ icon, fallback = '⚡', className = 'w-5 h-5' }) {
@@ -238,7 +247,16 @@ function ShopApp() {
   const [siteIcons, setSiteIcons] = useState(() => {
     try {
       const saved = localStorage.getItem('site_custom_icons')
-      return saved ? { ...defaultSiteIcons, ...JSON.parse(saved) } : defaultSiteIcons
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        Object.keys(parsed).forEach((key) => {
+          if (typeof parsed[key] === 'string' && parsed[key].includes('Image Uploaded')) {
+            parsed[key] = defaultSiteIcons[key] || '⚡'
+          }
+        })
+        return { ...defaultSiteIcons, ...parsed }
+      }
+      return defaultSiteIcons
     } catch {
       return defaultSiteIcons
     }
@@ -291,7 +309,15 @@ function ShopApp() {
 
       try {
         const updatedIcons = localStorage.getItem('site_custom_icons')
-        if (updatedIcons) setSiteIcons({ ...defaultSiteIcons, ...JSON.parse(updatedIcons) })
+        if (updatedIcons) {
+          const parsed = JSON.parse(updatedIcons)
+          Object.keys(parsed).forEach((key) => {
+            if (typeof parsed[key] === 'string' && parsed[key].includes('Image Uploaded')) {
+              parsed[key] = defaultSiteIcons[key] || '⚡'
+            }
+          })
+          setSiteIcons({ ...defaultSiteIcons, ...parsed })
+        }
       } catch (e) {
         console.error(e)
       }
@@ -1250,8 +1276,8 @@ function ShopApp() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             <div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-xl">
-                  {siteIcons.logo || '⚡'}
+                <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-xl p-1.5 shrink-0">
+                  <RenderIcon icon={siteIcons.logo} fallback="⚡" className="w-6 h-6" />
                 </div>
                 <span className="text-xl font-black text-white">
                   {siteTexts.storeNamePrefix || 'ZA'} <span className="text-blue-400">{siteTexts.storeNameSuffix || 'TechMart'}</span>
