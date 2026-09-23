@@ -773,8 +773,8 @@ function ShopApp() {
               }}
               className="flex items-center gap-3 shrink-0 group text-left"
             >
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xl font-black shadow-md shadow-blue-500/25 group-hover:scale-105 transition p-1.5">
-                <RenderIcon icon={siteIcons.logo} fallback="⚡" className="w-6 h-6 sm:w-7 sm:h-7" />
+              <div className="h-10 sm:h-12 w-auto flex items-center justify-center group-hover:scale-105 transition shrink-0">
+                <RenderIcon icon={siteIcons.logo} fallback="⚡" className="h-full w-auto max-h-full object-contain" />
               </div>
 
               <div>
@@ -899,8 +899,8 @@ function ShopApp() {
             <div>
               <div className="flex items-center justify-between pb-5 border-b border-slate-100">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-lg p-1.5 shrink-0">
-                    <RenderIcon icon={siteIcons.logo} fallback="⚡" className="w-5 h-5" />
+                  <div className="h-9 w-auto flex items-center justify-center shrink-0">
+                    <RenderIcon icon={siteIcons.logo} fallback="⚡" className="h-full w-auto max-h-full object-contain" />
                   </div>
                   <span className="font-black text-lg">
                     {siteTexts.storeNamePrefix || 'ZA'} <span className="text-blue-600">{siteTexts.storeNameSuffix || 'TechMart'}</span>
@@ -1276,8 +1276,8 @@ function ShopApp() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             <div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-xl p-1.5 shrink-0">
-                  <RenderIcon icon={siteIcons.logo} fallback="⚡" className="w-6 h-6" />
+                <div className="h-10 w-auto flex items-center justify-center shrink-0">
+                  <RenderIcon icon={siteIcons.logo} fallback="⚡" className="h-full w-auto max-h-full object-contain" />
                 </div>
                 <span className="text-xl font-black text-white">
                   {siteTexts.storeNamePrefix || 'ZA'} <span className="text-blue-400">{siteTexts.storeNameSuffix || 'TechMart'}</span>

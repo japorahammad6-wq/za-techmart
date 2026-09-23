@@ -2198,7 +2198,7 @@ description: product.description || '',
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-                <IconInputField label="Brand Logo Icon" iconKey="logo" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-blue-600 text-white" />
+                <IconInputField label="Brand Logo Icon" iconKey="logo" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-slate-100 text-slate-800" />
                 <IconInputField label="Cart Icon" iconKey="cart" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-slate-100 text-slate-800" />
                 <IconInputField label="Wishlist Icon" iconKey="wishlist" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-red-50 text-red-600" />
                 <IconInputField label="Track Order Icon" iconKey="trackOrder" siteIcons={siteIcons} setSiteIcons={setSiteIcons} defaultBg="bg-slate-100 text-slate-800" />
