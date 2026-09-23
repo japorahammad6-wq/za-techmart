@@ -3495,10 +3495,10 @@ function IconInputField({ label, iconKey, siteIcons, setSiteIcons, defaultBg = '
 
         <input
           type="text"
-          value={currentValue}
+          value={currentValue.startsWith('data:image/') ? '📁 Image Uploaded' : currentValue}
           onChange={(e) => setSiteIcons((prev) => ({ ...prev, [iconKey]: e.target.value }))}
           placeholder="Emoji / URL"
-          className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-xs font-bold text-center focus:border-blue-600 focus:outline-none bg-white"
+          className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-slate-900 text-xs font-bold text-center focus:border-blue-600 focus:outline-none bg-white truncate"
         />
 
         <label className="bg-blue-600 hover:bg-blue-700 text-white font-bold p-2.5 rounded-xl cursor-pointer transition text-xs shrink-0 flex items-center gap-1 shadow-sm" title="Upload Icon Picture from Gallery">

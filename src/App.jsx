@@ -137,9 +137,9 @@ export const isImageUrl = (val) => {
 export function RenderIcon({ icon, fallback = '⚡', className = 'w-5 h-5' }) {
   const iconStr = String(icon || fallback).trim()
   if (isImageUrl(iconStr)) {
-    return <img src={iconStr} alt="" className={`${className} object-contain inline-block`} />
+    return <img src={iconStr} alt="" className={`${className} object-contain inline-block shrink-0`} />
   }
-  return <span>{iconStr}</span>
+  return <span className="inline-block shrink-0">{iconStr}</span>
 }
 
 function ProductImage({ product }) {
@@ -163,9 +163,13 @@ function ProductImage({ product }) {
   }
 
   return (
-    <span className="text-5xl sm:text-7xl group-hover:scale-125 transition duration-500 select-none">
-      {product.icon || '📦'}
-    </span>
+    <div className="w-full h-full flex items-center justify-center group-hover:scale-110 transition duration-500 select-none p-3">
+      <RenderIcon
+        icon={product.icon}
+        fallback="📦"
+        className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
+      />
+    </div>
   )
 }
 
@@ -869,10 +873,12 @@ function ShopApp() {
             <div>
               <div className="flex items-center justify-between pb-5 border-b border-slate-100">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-lg">
-                    ⚡
+                  <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-lg p-1.5 shrink-0">
+                    <RenderIcon icon={siteIcons.logo} fallback="⚡" className="w-5 h-5" />
                   </div>
-                  <span className="font-black text-lg">ZA TechMart</span>
+                  <span className="font-black text-lg">
+                    {siteTexts.storeNamePrefix || 'ZA'} <span className="text-blue-600">{siteTexts.storeNameSuffix || 'TechMart'}</span>
+                  </span>
                 </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
@@ -900,7 +906,7 @@ function ShopApp() {
                         : 'hover:bg-slate-50'
                     }`}
                   >
-                    <span>{cat.icon}</span>
+                    <RenderIcon icon={cat.icon} fallback="✨" className="w-5 h-5 shrink-0" />
                     <span>{cat.name}</span>
                   </button>
                 ))}
@@ -913,14 +919,16 @@ function ShopApp() {
                     }}
                     className="w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 hover:bg-slate-50 text-slate-700 font-bold"
                   >
-                    <span>📦</span> Track Order
+                    <RenderIcon icon={siteIcons.trackOrder} fallback="📦" className="w-5 h-5 shrink-0" />
+                    <span>Track Order</span>
                   </button>
                 </div>
               </div>
             </div>
 
-            <div className="pt-6 border-t border-slate-100 text-xs text-slate-400 text-center">
-              📞 01871104992 • Open 24 Hours
+            <div className="pt-6 border-t border-slate-100 text-xs text-slate-400 text-center flex items-center justify-center gap-2">
+              <RenderIcon icon={siteIcons.phone} fallback="📞" className="w-4 h-4" />
+              <span>{siteTexts.phone || '01871104992'} • Open 24 Hours</span>
             </div>
           </div>
         </div>
@@ -1271,8 +1279,9 @@ function ShopApp() {
                 Quick Links
               </h3>
               <div className="space-y-2 text-xs sm:text-sm">
-                <button onClick={() => setTrackingOpen(true)} className="block hover:text-white transition">
-                  <span>{siteIcons.trackOrder || '📦'}</span> Order Tracking
+                <button onClick={() => setTrackingOpen(true)} className="flex items-center gap-2 hover:text-white transition">
+                  <RenderIcon icon={siteIcons.trackOrder} fallback="📦" className="w-4 h-4" />
+                  <span>Order Tracking</span>
                 </button>
                 <p className="hover:text-white transition">🚚 Delivery Rates (Dhaka ৳80 / Outside ৳120)</p>
                 {/* Discrete Admin Link in Footer for Site Admin */}
@@ -1287,13 +1296,15 @@ function ShopApp() {
                 Contact Us
               </h3>
               <div className="space-y-3 text-xs sm:text-sm">
-                <a href={`tel:${siteTexts.phone}`} className="block hover:text-white transition font-bold text-slate-200">
-                  {siteIcons.phone || '📞'} {siteTexts.phone || '01871104992'}
+                <a href={`tel:${siteTexts.phone}`} className="flex items-center gap-2 hover:text-white transition font-bold text-slate-200">
+                  <RenderIcon icon={siteIcons.phone} fallback="📞" className="w-4 h-4" />
+                  <span>{siteTexts.phone || '01871104992'}</span>
                 </a>
-                <a href={`https://wa.me/880${(siteTexts.phone || '01871104992').replace(/^0/, '')}`} target="_blank" rel="noreferrer" className="block hover:text-white transition text-emerald-400 font-bold">
-                  {siteIcons.whatsapp || '💬'} {siteTexts.whatsappLabel || 'WhatsApp Direct'}
+                <a href={`https://wa.me/880${(siteTexts.phone || '01871104992').replace(/^0/, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-white transition text-emerald-400 font-bold">
+                  <RenderIcon icon={siteIcons.whatsapp} fallback="💬" className="w-4 h-4" />
+                  <span>{siteTexts.whatsappLabel || 'WhatsApp Direct'}</span>
                 </a>
-                <a href={`mailto:${siteTexts.email}`} className="block hover:text-white transition">
+                <a href={`mailto:${siteTexts.email}`} className="flex items-center gap-2 hover:text-white transition">
                   ✉️ {siteTexts.email || 'Zafor2031@gmail.com'}
                 </a>
                 <p className="text-slate-500">🕐 Customer Support: 24/7</p>
@@ -1314,8 +1325,8 @@ function ShopApp() {
           <div className="w-80 sm:w-96 rounded-3xl shadow-2xl overflow-hidden animate-slide-up border border-slate-200 bg-white text-slate-900">
             <div className="bg-emerald-600 text-white p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-2xl font-black">
-                  💬
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center p-2 text-white shrink-0">
+                  <RenderIcon icon={siteIcons.whatsapp} fallback="💬" className="w-6 h-6" />
                 </div>
                 <div>
                   <h4 className="font-black text-sm">ZA TechMart Support</h4>
@@ -1349,17 +1360,18 @@ function ShopApp() {
                 rel="noreferrer"
                 className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl font-black text-xs flex items-center justify-center gap-2 shadow-md"
               >
-                <span>💬 Start WhatsApp Chat</span>
+                <RenderIcon icon={siteIcons.whatsapp} fallback="💬" className="w-4 h-4" />
+                <span>Start WhatsApp Chat</span>
               </a>
             </div>
           </div>
         ) : (
           <button
             onClick={() => setWhatsappOpen(true)}
-            className="group bg-emerald-600 hover:bg-emerald-500 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+            className="group bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-95"
             title="Chat on WhatsApp"
           >
-            <span className="text-2xl">💬</span>
+            <RenderIcon icon={siteIcons.whatsapp} fallback="💬" className="w-6 h-6" />
             <span className="hidden group-hover:inline ml-2 text-xs font-black pr-2">Chat with Support</span>
           </button>
         )}
