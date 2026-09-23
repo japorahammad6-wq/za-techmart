@@ -912,77 +912,70 @@ function ShopApp() {
         </div>
       )}
 
-      {/* HERO CAROUSEL / BANNER SLIDER */}
-      <section className={`relative overflow-hidden bg-gradient-to-r ${activeSlide.bg || 'from-slate-950 via-blue-950 to-indigo-950'} text-white transition-all duration-700`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-20 relative z-10">
-          <div className="grid lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-8 animate-fade-in">
-              <div className="inline-flex items-center gap-2 border border-blue-400/30 bg-blue-500/10 rounded-full px-4 py-1.5 backdrop-blur-xs">
-                <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-                <span className="text-xs sm:text-sm font-bold text-blue-300">
-                  {activeSlide.badgeText || activeSlide.tag || '⚡ SPECIAL OFFER'}
-                </span>
+      {/* HERO CAROUSEL / FULL-WIDTH SLEEK BANNER SLIDER */}
+      <section className="relative overflow-hidden bg-slate-950 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 relative z-10">
+          <div className="relative w-full h-44 sm:h-64 md:h-72 lg:h-[310px] rounded-3xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-900 group">
+            
+            {/* BANNER IMAGE / GRAPHIC SHOWCASE (No text overlay) */}
+            {activeSlide.image ? (
+              <img
+                src={activeSlide.image}
+                alt={activeSlide.title || 'Hero Banner'}
+                className="w-full h-full object-cover transition-all duration-700 transform group-hover:scale-102"
+              />
+            ) : (
+              <div className={`w-full h-full bg-gradient-to-r ${activeSlide.bg || 'from-slate-950 via-blue-950 to-indigo-950'} flex flex-col justify-center items-center text-center p-6 border border-white/10`}>
+                <span className="text-3xl sm:text-5xl mb-2 animate-bounce">⚡</span>
+                <h3 className="text-lg sm:text-2xl font-black text-white max-w-xl line-clamp-2">
+                  {activeSlide.title}
+                </h3>
               </div>
+            )}
 
-              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black leading-tight mt-5 tracking-tight">
-                {activeSlide.title}
-              </h2>
-
-              <p className="mt-4 text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
-                {activeSlide.subtitle}
-              </p>
-
-              <div className="flex flex-wrap gap-4 mt-8">
-                <button
-                  onClick={() => {
-                    setCategory(activeSlide.categoryJump || 'All')
-                    document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })
-                  }}
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-7 py-3.5 rounded-2xl font-black text-sm transition shadow-xl shadow-blue-600/30 hover:scale-102"
-                >
-                  {activeSlide.btnText || 'Shop Category →'}
-                </button>
-              </div>
+            {/* OVERLAID SHOP NOW / CATEGORY ACTION BUTTON */}
+            <div className="absolute bottom-3 left-3 sm:bottom-5 sm:left-5 z-20">
+              <button
+                onClick={() => {
+                  setCategory(activeSlide.categoryJump || 'All')
+                  document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                className="bg-blue-600 hover:bg-blue-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-2xl font-extrabold text-xs sm:text-sm transition shadow-2xl shadow-blue-600/50 hover:scale-105 flex items-center gap-2 border border-white/20 backdrop-blur-md"
+              >
+                <span>{activeSlide.btnText || 'Shop Now →'}</span>
+              </button>
             </div>
 
-            {/* HERO BANNER IMAGE / CAROUSEL CONTROLS */}
-            <div className="lg:col-span-4 flex flex-col items-center justify-center gap-4">
-              {activeSlide.image && (
-                <div className="w-full max-w-xs h-48 sm:h-60 rounded-3xl overflow-hidden border border-white/20 bg-white/5 shadow-2xl p-2 mb-2">
-                  <img src={activeSlide.image} alt="" className="w-full h-full object-cover rounded-2xl" />
-                </div>
-              )}
+            {/* PREVIOUS SLIDE ARROW BUTTON */}
+            <button
+              onClick={() => setCurrentSlide((prev) => (prev <= 0 ? heroSlides.length - 1 : prev - 1))}
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/40 hover:bg-blue-600 text-white flex items-center justify-center font-black text-lg sm:text-xl border border-white/20 transition shadow-lg z-20 backdrop-blur-xs"
+              aria-label="Previous slide"
+            >
+              ‹
+            </button>
 
-              <div className="flex items-center gap-3">
+            {/* NEXT SLIDE ARROW BUTTON */}
+            <button
+              onClick={() => setCurrentSlide((prev) => (prev + 1) % heroSlides.length)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/40 hover:bg-blue-600 text-white flex items-center justify-center font-black text-lg sm:text-xl border border-white/20 transition shadow-lg z-20 backdrop-blur-xs"
+              aria-label="Next slide"
+            >
+              ›
+            </button>
+
+            {/* SLIDER DOTS INDICATORS */}
+            <div className="absolute bottom-3 right-3 sm:bottom-5 sm:right-5 z-20 flex gap-1.5 bg-black/40 px-2.5 py-1.5 rounded-full border border-white/10 backdrop-blur-xs">
+              {heroSlides.map((s, idx) => (
                 <button
-                  onClick={() => setCurrentSlide((prev) => (prev <= 0 ? heroSlides.length - 1 : prev - 1))}
-                  className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-black text-xl border border-white/20 transition"
-                  aria-label="Previous slide"
-                >
-                  ‹
-                </button>
-
-                <div className="flex gap-2">
-                  {heroSlides.map((s, idx) => (
-                    <button
-                      key={s.id || idx}
-                      onClick={() => setCurrentSlide(idx)}
-                      className={`h-2.5 rounded-full transition-all ${
-                        currentSlide === idx ? 'w-8 bg-blue-500' : 'w-2.5 bg-white/40 hover:bg-white/60'
-                      }`}
-                      aria-label={`Slide ${idx + 1}`}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setCurrentSlide((prev) => (prev + 1) % heroSlides.length)}
-                  className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-black text-xl border border-white/20 transition"
-                  aria-label="Next slide"
-                >
-                  ›
-                </button>
-              </div>
+                  key={s.id || idx}
+                  onClick={() => setCurrentSlide(idx)}
+                  className={`h-2 rounded-full transition-all ${
+                    currentSlide === idx ? 'w-6 bg-blue-500' : 'w-2 bg-white/50 hover:bg-white/80'
+                  }`}
+                  aria-label={`Slide ${idx + 1}`}
+                />
+              ))}
             </div>
           </div>
         </div>
