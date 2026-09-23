@@ -264,17 +264,83 @@ function AdminPage() {
     }
   })
 
-  const handleSaveSiteIcons = () => {
-    localStorage.setItem('site_custom_icons', JSON.stringify(siteIcons))
-    window.dispatchEvent(new Event('site-settings-updated'))
-    alert('Customer Web Icons updated successfully!')
+  const syncGlobalSettingsToSupabase = async (overrideData = {}) => {
+    try {
+      const currentIcons = overrideData.siteIcons || siteIcons
+      const currentTexts = overrideData.siteTexts || siteTexts
+      const currentTicker = overrideData.tickerText !== undefined ? overrideData.tickerText : tickerText
+      const currentSlides = overrideData.heroSlides || heroSlides
+
+      const payload = {
+        siteIcons: currentIcons,
+        siteTexts: currentTexts,
+        tickerText: currentTicker,
+        heroSlides: currentSlides,
+        updatedAt: new Date().toISOString(),
+      }
+
+      await supabase.from('products').upsert({
+        id: 999999,
+        name: 'SITE_CONFIG_GLOBAL_SETTINGS',
+        category: '__SITE_CONFIG__',
+        price: 0,
+        old_price: 0,
+        stock: 0,
+        description: JSON.stringify(payload),
+      })
+    } catch (e) {
+      console.error('Cloud sync exception:', e)
+    }
   }
 
-  const handleResetSiteIcons = () => {
+  useEffect(() => {
+    const fetchCloudSettings = async () => {
+      try {
+        const { data } = await supabase.from('products').select('*').eq('category', '__SITE_CONFIG__').single()
+        if (data && data.description) {
+          const parsed = JSON.parse(data.description)
+          if (parsed.siteIcons) {
+            Object.keys(parsed.siteIcons).forEach((key) => {
+              if (typeof parsed.siteIcons[key] === 'string' && parsed.siteIcons[key].includes('Image Uploaded')) {
+                parsed.siteIcons[key] = defaultSiteIcons[key] || '⚡'
+              }
+            })
+            setSiteIcons((prev) => ({ ...defaultSiteIcons, ...parsed.siteIcons }))
+            localStorage.setItem('site_custom_icons', JSON.stringify(parsed.siteIcons))
+          }
+          if (parsed.siteTexts) {
+            setSiteTexts((prev) => ({ ...defaultSiteTexts, ...parsed.siteTexts }))
+            localStorage.setItem('site_custom_texts', JSON.stringify(parsed.siteTexts))
+          }
+          if (parsed.tickerText) {
+            setTickerText(parsed.tickerText)
+            localStorage.setItem('site_ticker_text', parsed.tickerText)
+          }
+          if (parsed.heroSlides) {
+            setHeroSlides(parsed.heroSlides)
+            localStorage.setItem('site_hero_slides', JSON.stringify(parsed.heroSlides))
+          }
+        }
+      } catch (e) {
+        // config not fetched yet
+      }
+    }
+    fetchCloudSettings()
+  }, [])
+
+  const handleSaveSiteIcons = async () => {
+    localStorage.setItem('site_custom_icons', JSON.stringify(siteIcons))
+    window.dispatchEvent(new Event('site-settings-updated'))
+    await syncGlobalSettingsToSupabase({ siteIcons })
+    alert('Customer Web Icons updated & synced across all Mobile & PC devices!')
+  }
+
+  const handleResetSiteIcons = async () => {
     if (!confirm('Reset all customer web icons back to default?')) return
     setSiteIcons(defaultSiteIcons)
     localStorage.setItem('site_custom_icons', JSON.stringify(defaultSiteIcons))
     window.dispatchEvent(new Event('site-settings-updated'))
+    await syncGlobalSettingsToSupabase({ siteIcons: defaultSiteIcons })
   }
 
   // DYNAMIC SITE TEXTS & BRANDING STATE
@@ -300,17 +366,19 @@ function AdminPage() {
     }
   })
 
-  const handleSaveSiteTexts = () => {
+  const handleSaveSiteTexts = async () => {
     localStorage.setItem('site_custom_texts', JSON.stringify(siteTexts))
     window.dispatchEvent(new Event('site-settings-updated'))
-    alert('Customer Web Texts updated successfully!')
+    await syncGlobalSettingsToSupabase({ siteTexts })
+    alert('Customer Web Texts updated & synced across all Mobile & PC devices!')
   }
 
-  const handleResetSiteTexts = () => {
+  const handleResetSiteTexts = async () => {
     if (!confirm('Reset all customer web texts back to default?')) return
     setSiteTexts(defaultSiteTexts)
     localStorage.setItem('site_custom_texts', JSON.stringify(defaultSiteTexts))
     window.dispatchEvent(new Event('site-settings-updated'))
+    await syncGlobalSettingsToSupabase({ siteTexts: defaultSiteTexts })
   }
 
   // DYNAMIC TICKER & BANNER MANAGEMENT STATE
@@ -370,10 +438,11 @@ function AdminPage() {
     bg: 'from-slate-950 via-blue-950 to-indigo-950',
   })
 
-  const handleSaveTicker = () => {
+  const handleSaveTicker = async () => {
     localStorage.setItem('site_ticker_text', tickerText)
     window.dispatchEvent(new Event('site-settings-updated'))
-    alert('Top Ticker Text updated successfully!')
+    await syncGlobalSettingsToSupabase({ tickerText })
+    alert('Top Ticker Text updated & synced across all Mobile & PC devices!')
   }
 
   const openAddBanner = () => {
@@ -404,7 +473,7 @@ function AdminPage() {
     setBannerModal(true)
   }
 
-  const handleSaveBanner = (e) => {
+  const handleSaveBanner = async (e) => {
     e.preventDefault()
     let updated = []
     if (editingBanner) {
@@ -416,16 +485,18 @@ function AdminPage() {
     setHeroSlides(updated)
     localStorage.setItem('site_hero_slides', JSON.stringify(updated))
     window.dispatchEvent(new Event('site-settings-updated'))
+    await syncGlobalSettingsToSupabase({ heroSlides: updated })
     setBannerModal(false)
     setEditingBanner(null)
   }
 
-  const handleDeleteBanner = (id) => {
+  const handleDeleteBanner = async (id) => {
     if (!confirm('Are you sure you want to delete this hero banner?')) return
     const updated = heroSlides.filter((s) => s.id !== id)
     setHeroSlides(updated)
     localStorage.setItem('site_hero_slides', JSON.stringify(updated))
     window.dispatchEvent(new Event('site-settings-updated'))
+    await syncGlobalSettingsToSupabase({ heroSlides: updated })
   }
 
   const handleBannerImageUpload = async (e) => {

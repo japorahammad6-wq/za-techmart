@@ -457,7 +457,49 @@ function ShopApp() {
       .order('id', { ascending: true })
 
     if (!error && data && data.length > 0) {
-      const mapped = data.map((item) => ({
+      // 1. Extract cloud site config row if present
+      const configItem = data.find(
+        (item) => item.category === '__SITE_CONFIG__' || item.id === 999999 || item.name === 'SITE_CONFIG_GLOBAL_SETTINGS'
+      )
+
+      if (configItem && configItem.description) {
+        try {
+          const parsedConfig = JSON.parse(configItem.description)
+          if (parsedConfig.siteIcons) {
+            Object.keys(parsedConfig.siteIcons).forEach((key) => {
+              if (
+                typeof parsedConfig.siteIcons[key] === 'string' &&
+                parsedConfig.siteIcons[key].includes('Image Uploaded')
+              ) {
+                parsedConfig.siteIcons[key] = defaultSiteIcons[key] || '⚡'
+              }
+            })
+            setSiteIcons((prev) => ({ ...defaultSiteIcons, ...parsedConfig.siteIcons }))
+            localStorage.setItem('site_custom_icons', JSON.stringify(parsedConfig.siteIcons))
+          }
+          if (parsedConfig.siteTexts) {
+            setSiteTexts((prev) => ({ ...defaultSiteTexts, ...parsedConfig.siteTexts }))
+            localStorage.setItem('site_custom_texts', JSON.stringify(parsedConfig.siteTexts))
+          }
+          if (parsedConfig.tickerText) {
+            setTickerText(parsedConfig.tickerText)
+            localStorage.setItem('site_ticker_text', parsedConfig.tickerText)
+          }
+          if (parsedConfig.heroSlides) {
+            setHeroSlides(parsedConfig.heroSlides)
+            localStorage.setItem('site_hero_slides', JSON.stringify(parsedConfig.heroSlides))
+          }
+        } catch (e) {
+          console.error('Cloud config parse error:', e)
+        }
+      }
+
+      // 2. Filter out config row from customer storefront catalog
+      const actualProducts = data.filter(
+        (item) => item.category !== '__SITE_CONFIG__' && item.id !== 999999 && item.name !== 'SITE_CONFIG_GLOBAL_SETTINGS'
+      )
+
+      const mapped = actualProducts.map((item) => ({
         ...item,
         oldPrice: item.old_price ?? item.oldPrice ?? item.price,
         price: Number(item.price || 0),
